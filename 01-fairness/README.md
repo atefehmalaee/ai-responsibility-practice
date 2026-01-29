@@ -1,21 +1,22 @@
 Fairness
 ========
 
-Goal
-----
-Identify and reduce disparate outcomes across groups.
+Purpose
+-------
+Measure and reduce disparities across sensitive groups while documenting tradeoffs.
 
-What to build (professional, portfolio-ready)
----------------------------------------------
-- A reproducible fairness audit script
-- Baseline vs mitigated metrics comparison
-- A short technical note on tradeoffs
+What this module covers
+-----------------------
+- Auditing: group, intersectional, and counterfactual checks
+- Mitigations: pre-, in-, and post-processing techniques
+- Reporting: reproducible CSV evidence and summaries
 
 Techniques
 ----------
-- Group fairness metrics (demographic parity, equalized odds)
-- Bias audits across sensitive attributes
-- Mitigation (reweighing, thresholding, post-processing)
+- Metrics: demographic parity, equal opportunity, average odds
+- Audits: group and intersectional slices, counterfactual flip rate
+- Mitigations: reweighing, fairness-regularized training, equalized-odds thresholds
+- Advanced: Fairlearn (EG, ThresholdOptimizer) and AIF360 (ROC)
 
 Exercises
 ---------
@@ -28,29 +29,28 @@ Quick start
    - `python -m venv .venv`
    - `source .venv/bin/activate`
    - `pip install -r requirements.txt`
-2. Run the audit:
-   - `python fairness_audit.py --seed 42 --out reports/fairness_report.csv`
+2. Run the audit (synthetic data):
+   - `python fairness_audit.py --seed 42 --out reports`
+3. Run with Census Income (Adult) dataset:
+   - `python fairness_audit.py --dataset adult --adult-path path/to/adult.csv --sensitive-attr sex --out reports`
 
 Outputs
 -------
-- `reports/fairness_report.csv` with per-group metrics
-- Console summary of fairness gaps
+- `reports/fairness_report.csv` (baseline + mitigations)
+- `reports/fairness_intersectional.csv` (intersectional slices)
+- `reports/counterfactual_summary.csv` (flip-rate check)
+- `reports/fairlearn_metrics.csv` and `reports/fairlearn_mitigations.csv` (optional)
+- `reports/aif360_metrics.csv` and `reports/aif360_mitigations.csv` (optional)
+- Console summary of fairness gaps by technique
 
-Latest run (seed 42)
---------------------
-Baseline selection rates: group 0 = 0.376, group 1 = 0.404 (gap 0.028)
-Mitigated selection rates: group 0 = 0.389, group 1 = 0.390 (gap 0.002)
-
-Accuracy (by group):
-- Baseline: group 0 = 0.795, group 1 = 0.808
-- Mitigated: group 0 = 0.798, group 1 = 0.799
+How to present (interview-ready)
+--------------------------------
+- Show baseline gaps, then improvement per mitigation.
+- Highlight accuracy tradeoffs vs fairness gains.
+- Explain which fairness constraint best fits the use case.
 
 Deliverables
 ------------
-- Fairness audit table with metrics by group
+- Fairness audit tables and plots
 - Short note on chosen mitigation and tradeoffs
 
-How to show skill in Git
-------------------------
-- Commit `fairness_audit.py`, `README.md`, and `reports/fairness_report.csv`.
-- Add a brief summary in this README: what metrics improved and what accuracy tradeoff you accepted.
