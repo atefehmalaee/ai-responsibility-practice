@@ -1,0 +1,2 @@
+stage,statistical_parity_diff,disparate_impact,equal_opportunity_diff,average_odds_diff
+adversarial_debiasing,0.0,,0.0,0.0

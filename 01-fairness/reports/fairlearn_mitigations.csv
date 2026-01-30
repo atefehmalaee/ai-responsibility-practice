@@ -1,0 +1,5 @@
+sensitive_feature_0,accuracy,selection_rate,stage
+0,0.8901893287435456,0.1631669535283993,exponentiated_gradient
+1,0.7999674479166666,0.17578125,exponentiated_gradient
+0,0.8881239242685026,0.10946643717728055,threshold_optimizer
+1,0.8035481770833334,0.19108072916666666,threshold_optimizer

@@ -1,0 +1,2 @@
+stage,statistical_parity_diff,disparate_impact,equal_opportunity_diff,average_odds_diff
+baseline,-0.1603046113023523,0.35203188694628135,-0.07836498823814175,-0.07139012492582619

@@ -29,10 +29,11 @@ Quick start
    - `python -m venv .venv`
    - `source .venv/bin/activate`
    - `pip install -r requirements.txt`
-2. Run the audit (synthetic data):
-   - `python fairness_audit.py --seed 42 --out reports`
-3. Run with Census Income (Adult) dataset:
-   - `python fairness_audit.py --dataset adult --adult-path path/to/adult.csv --sensitive-attr sex --out reports`
+2. Run with Census Income (Adult) dataset (default):
+   - `python fairness_audit.py --dataset adult --adult-path data/adult.csv --sensitive-attr sex --out reports`
+   - To download automatically:
+     - `python fairness_audit.py --download-adult --out reports`
+3. Synthetic data option removed; this module now uses Census Income (Adult) only.
 
 Outputs
 -------
@@ -40,7 +41,8 @@ Outputs
 - `reports/fairness_intersectional.csv` (intersectional slices)
 - `reports/counterfactual_summary.csv` (flip-rate check)
 - `reports/fairlearn_metrics.csv` and `reports/fairlearn_mitigations.csv` (optional)
-- `reports/aif360_metrics.csv` and `reports/aif360_mitigations.csv` (optional)
+- `reports/aif360_metrics.csv`, `reports/aif360_mitigations.csv` (optional)
+- `reports/aif360_adversarial.csv` (optional, requires TensorFlow)
 - Console summary of fairness gaps by technique
 
 How to present (interview-ready)
