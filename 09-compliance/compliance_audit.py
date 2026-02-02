@@ -1,9 +1,10 @@
 import argparse  # CLI parsing
+# Compliance evidence is attached to model runs as MLflow tags and artifacts for auditability.
 from dataclasses import dataclass  # Lightweight data container
 from pathlib import Path  # Path utilities
 from typing import List  # Type hints
 
-import pandas as pd  # Tabular data
+import mlflow  # MLflow tracking APIs
 
 
 @dataclass
@@ -86,44 +87,61 @@ def build_dpia_checklist() -> List[DpiaCheck]:
     ]
 
 
-def write_notes(path: Path, matrix: List[ComplianceRequirement]) -> None:
-    open_items = [m for m in matrix if m.status.lower() != "in place"]
-    content = "\n".join(
-        [
-            "Compliance Notes",
-            "================",
-            "",
-            f"Total requirements: {len(matrix)}",
-            f"Open items: {len(open_items)}",
-            "",
-            "Next Steps",
-            "----------",
-            "- Review any items not marked 'In place'.",
-            "- Attach evidence links or documents for each control.",
-            "",
-        ]
-    )
-    path.write_text(content)
+def _split_evidence_paths(evidence: str) -> List[str]:
+    parts = []
+    for chunk in evidence.replace(",", "+").split("+"):
+        cleaned = chunk.strip()
+        if cleaned:
+            parts.append(cleaned)  # Keep user-provided evidence tokens
+    return parts
+
+
+def _log_evidence_artifacts(evidence: str, evidence_root: Path, prefix: str) -> None:
+    for idx, item in enumerate(_split_evidence_paths(evidence), start=1):
+        candidate = evidence_root / item
+        if candidate.exists() and candidate.is_file():
+            mlflow.log_artifact(str(candidate), artifact_path=f"evidence/{prefix}")  # Upload evidence file
+            mlflow.set_tag(f"{prefix}.evidence_{idx}", str(candidate))  # Store resolved path
+        else:
+            mlflow.set_tag(f"{prefix}.evidence_{idx}", item)  # Keep reference if file missing
+
+
+def _set_db_tracking_uri() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    tracking_db = project_root / "mlflow.db"
+    mlflow.set_tracking_uri(f"sqlite:///{tracking_db}")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Compliance audit with matrix and DPIA checklist.")
-    parser.add_argument("--out", type=str, default="reports")
+    parser = argparse.ArgumentParser(description="Compliance audit using MLflow metadata only.")
+    parser.add_argument("--evidence-root", type=str, default=".")
     args = parser.parse_args()
 
+    _set_db_tracking_uri()
     matrix = build_compliance_matrix()
     dpia = build_dpia_checklist()
 
-    out_dir = Path(args.out)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    evidence_root = Path(args.evidence_root)  # Resolve evidence paths from this base
 
-    pd.DataFrame([m.__dict__ for m in matrix]).to_csv(out_dir / "compliance_matrix.csv", index=False)
-    pd.DataFrame([d.__dict__ for d in dpia]).to_csv(out_dir / "dpia_checklist.csv", index=False)
-    write_notes(out_dir / "compliance_notes.md", matrix)
+    mlflow.set_experiment("responsible-ai-compliance")  # Single experiment for compliance runs
 
-    print(f"Wrote {out_dir / 'compliance_matrix.csv'}")
-    print(f"Wrote {out_dir / 'dpia_checklist.csv'}")
-    print(f"Wrote {out_dir / 'compliance_notes.md'}")
+    with mlflow.start_run(run_name="compliance_audit") as run:
+        for idx, req in enumerate(matrix, start=1):
+            prefix = f"compliance.{idx}"
+            mlflow.set_tag(f"{prefix}.requirement", req.requirement)  # Requirement statement
+            mlflow.set_tag(f"{prefix}.control", req.control)  # Implemented control
+            mlflow.set_tag(f"{prefix}.status", req.status)  # Compliance status
+            mlflow.set_tag(f"{prefix}.evidence", req.evidence)  # Evidence references
+            _log_evidence_artifacts(req.evidence, evidence_root, prefix)
+
+        for idx, check in enumerate(dpia, start=1):
+            prefix = f"dpia.{idx}"
+            mlflow.set_tag(f"{prefix}.category", check.category)  # DPIA category
+            mlflow.set_tag(f"{prefix}.risk_level", check.risk_level)  # Risk rating
+            mlflow.set_tag(f"{prefix}.mitigation", check.mitigation)  # Mitigation plan
+            mlflow.set_tag(f"{prefix}.question", check.question)  # DPIA prompt
+
+        print(f"Logged compliance audit to MLflow: {run.info.run_id}")
 
 
 if __name__ == "__main__":

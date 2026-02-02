@@ -40,8 +40,8 @@ def generate_data(seed: int, drift: bool = False) -> tuple:
         random_state=seed,
     )
     if drift:
-        X[:, 0] = X[:, 0] + 0.8  # Shift feature distribution
-        X[:, 3] = X[:, 3] * 1.3  # Scale feature distribution
+        X[:, 0] = X[:, 0] + 0.8  # Simulate mean shift drift
+        X[:, 3] = X[:, 3] * 1.3  # Simulate scale drift
     return X, y
 
 
@@ -50,13 +50,13 @@ def train_model(X: np.ndarray, y: np.ndarray, seed: int) -> LogisticRegression:
         X, y, test_size=0.3, random_state=seed, stratify=y
     )
     model = LogisticRegression(max_iter=1000)
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train)  # Train baseline model on reference data
     return model
 
 
 def evaluate(model: LogisticRegression, X: np.ndarray, y: np.ndarray) -> float:
     y_pred = model.predict(X)
-    return float(accuracy_score(y, y_pred))
+    return float(accuracy_score(y, y_pred))  # Basic performance signal for monitoring
 
 
 def compute_drift(baseline: np.ndarray, current: np.ndarray, threshold: float = 0.2) -> List[DriftResult]:
@@ -82,7 +82,7 @@ def build_monitoring_metrics(acc: float, drift_flags: int) -> List[MonitoringMet
     return [
         MonitoringMetric("accuracy", acc, 0.75, "alert" if acc < 0.75 else "ok"),
         MonitoringMetric("drift_flags", float(drift_flags), 1.0, "alert" if drift_flags >= 1 else "ok"),
-        MonitoringMetric("data_volume", 2000.0, 1500.0, "ok"),
+        MonitoringMetric("data_volume", 2000.0, 1500.0, "ok"),  # Placeholder for monitoring volume
     ]
 
 
@@ -106,7 +106,7 @@ def write_incident_response(path: Path) -> None:
             "",
         ]
     )
-    path.write_text(content)
+    path.write_text(content)  # Write standard response playbook
 
 
 def main() -> None:
@@ -115,23 +115,23 @@ def main() -> None:
     parser.add_argument("--out", type=str, default="reports")
     args = parser.parse_args()
 
-    X_base, y_base = generate_data(args.seed, drift=False)
-    X_curr, y_curr = generate_data(args.seed + 1, drift=True)
+    X_base, y_base = generate_data(args.seed, drift=False)  # Baseline reference data
+    X_curr, y_curr = generate_data(args.seed + 1, drift=True)  # Simulated current data
 
     model = train_model(X_base, y_base, args.seed)
-    acc = evaluate(model, X_curr, y_curr)
+    acc = evaluate(model, X_curr, y_curr)  # Monitor accuracy on current data
 
     drift_results = compute_drift(X_base, X_curr)
-    drift_flags = sum(1 for r in drift_results if r.flagged)
+    drift_flags = sum(1 for r in drift_results if r.flagged)  # Count flagged features
 
     metrics = build_monitoring_metrics(acc, drift_flags)
 
     out_dir = Path(args.out)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)  # Ensure output folder
 
     pd.DataFrame([m.__dict__ for m in metrics]).to_csv(out_dir / "monitoring_metrics.csv", index=False)
     pd.DataFrame([d.__dict__ for d in drift_results]).to_csv(out_dir / "drift_report.csv", index=False)
-    write_incident_response(out_dir / "incident_response.md")
+    write_incident_response(out_dir / "incident_response.md")  # Document response steps
 
     print(f"Wrote {out_dir / 'monitoring_metrics.csv'}")
     print(f"Wrote {out_dir / 'drift_report.csv'}")

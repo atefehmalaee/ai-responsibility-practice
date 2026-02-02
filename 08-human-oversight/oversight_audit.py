@@ -33,17 +33,17 @@ def build_review_policy() -> dict:
 
 def assign_review_decision(proba: float, policy: dict) -> ReviewDecision:
     if proba >= policy["auto_approve_threshold"]:
-        return ReviewDecision(0, proba, 1, False, "auto_approve")
+        return ReviewDecision(0, proba, 1, False, "auto_approve")  # Approve without human review
     if proba <= policy["auto_reject_threshold"]:
-        return ReviewDecision(0, proba, 0, False, "auto_reject")
-    return ReviewDecision(0, proba, int(proba >= 0.5), True, "manual_review")
+        return ReviewDecision(0, proba, 0, False, "auto_reject")  # Reject without human review
+    return ReviewDecision(0, proba, int(proba >= 0.5), True, "manual_review")  # Route to reviewer
 
 
 def simulate_review_queue(proba: np.ndarray, policy: dict) -> List[ReviewDecision]:
     decisions = []
     for idx, p in enumerate(proba, start=1):
         decision = assign_review_decision(float(p), policy)
-        decision.case_id = idx
+        decision.case_id = idx  # Stable ID for audit trail
         decisions.append(decision)
     return decisions
 
@@ -70,7 +70,7 @@ def write_policy(path: Path, policy: dict) -> None:
             "",
         ]
     )
-    path.write_text(content)
+    path.write_text(content)  # Human oversight policy artifact
 
 
 def write_escalation_checklist(path: Path) -> None:
@@ -87,7 +87,7 @@ def write_escalation_checklist(path: Path) -> None:
             "",
         ]
     )
-    path.write_text(content)
+    path.write_text(content)  # Operational checklist for incident response
 
 
 def main() -> None:
@@ -110,18 +110,18 @@ def main() -> None:
         X, y, test_size=0.3, random_state=args.seed, stratify=y
     )
 
-    model = LogisticRegression(max_iter=1000)
+    model = LogisticRegression(max_iter=1000)  # Simple baseline for oversight simulation
     model.fit(X_train, y_train)
 
-    proba = model.predict_proba(X_test)[:, 1]
-    y_pred = (proba >= 0.5).astype(int)
+    proba = model.predict_proba(X_test)[:, 1]  # Class-1 confidence scores
+    y_pred = (proba >= 0.5).astype(int)  # Default decision threshold
     accuracy = float(accuracy_score(y_test, y_pred))
 
-    policy = build_review_policy()
-    review_queue = simulate_review_queue(proba, policy)
+    policy = build_review_policy()  # Oversight rules and thresholds
+    review_queue = simulate_review_queue(proba, policy)  # Assign review outcomes
 
     out_dir = Path(args.out)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)  # Ensure output folder exists
 
     pd.DataFrame([d.__dict__ for d in review_queue]).to_csv(out_dir / "review_queue.csv", index=False)
     write_policy(out_dir / "oversight_policy.md", policy)

@@ -1,0 +1,4 @@
+column,pii_type,match_count,example
+name,name,1200,Jordan Kim
+email,email,1200,jordan.kim@demo.org
+phone,phone,1200,775-524-1929

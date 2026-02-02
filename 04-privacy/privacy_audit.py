@@ -160,6 +160,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Privacy audit with PII scan and feature minimization.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--out", type=str, default="reports")
+    parser.add_argument("--save-synthetic", action="store_true")
     args = parser.parse_args()
 
     df = generate_synthetic_dataset(args.seed)
@@ -180,6 +181,8 @@ def main() -> None:
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    if args.save_synthetic:
+        df.to_csv(out_dir / "synthetic_dataset.csv", index=False)
     pii_scan.to_csv(out_dir / "pii_scan.csv", index=False)
     pd.DataFrame([metrics_full.__dict__, metrics_min.__dict__]).to_csv(
         out_dir / "feature_minimization.csv", index=False
@@ -191,6 +194,8 @@ def main() -> None:
     print(f"Wrote {out_dir / 'feature_minimization.csv'}")
     print(f"Wrote {out_dir / 'redacted_sample.csv'}")
     print(f"Wrote {out_dir / 'privacy_risk_note.md'}")
+    if args.save_synthetic:
+        print(f"Wrote {out_dir / 'synthetic_dataset.csv'}")
 
 
 if __name__ == "__main__":

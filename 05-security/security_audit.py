@@ -27,6 +27,7 @@ class FuzzResult:
 
 
 def build_threat_model() -> List[ThreatItem]:
+    # Purpose: Define a lightweight STRIDE-style threat model for key assets.
     return [
         ThreatItem(
             asset="Training data",
@@ -62,6 +63,7 @@ def build_threat_model() -> List[ThreatItem]:
 
 
 def generate_data(seed: int) -> tuple:
+    # Purpose: Generate a synthetic dataset for fuzz testing scenarios.
     X, y = make_classification(
         n_samples=2000,
         n_features=8,
@@ -75,6 +77,7 @@ def generate_data(seed: int) -> tuple:
 
 
 def train_model(X: np.ndarray, y: np.ndarray, seed: int) -> LogisticRegression:
+    # Purpose: Train a baseline model to evaluate robustness under attacks.
     X_train, _, y_train, _ = train_test_split(
         X, y, test_size=0.3, random_state=seed, stratify=y
     )
@@ -84,11 +87,13 @@ def train_model(X: np.ndarray, y: np.ndarray, seed: int) -> LogisticRegression:
 
 
 def evaluate(model: LogisticRegression, X: np.ndarray, y: np.ndarray) -> float:
+    # Purpose: Compute a single accuracy score for a given input scenario.
     y_pred = model.predict(X)
     return float(accuracy_score(y, y_pred))
 
 
 def fuzz_inputs(rng: np.random.RandomState, X: np.ndarray) -> dict:
+    # Purpose: Create adversarial-style perturbations of inputs.
     n_samples, n_features = X.shape
     results = {}
 
@@ -116,12 +121,14 @@ def fuzz_inputs(rng: np.random.RandomState, X: np.ndarray) -> dict:
 
 
 def sanitize_inputs(X: np.ndarray) -> np.ndarray:
+    # Purpose: Apply basic input sanitization before inference.
     X_clean = np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
     X_clean = np.clip(X_clean, -10.0, 10.0)
     return X_clean
 
 
 def run_fuzz_tests(model: LogisticRegression, X_test: np.ndarray, y_test: np.ndarray, seed: int) -> List[FuzzResult]:
+    # Purpose: Measure performance degradation across fuzz scenarios.
     rng = np.random.RandomState(seed)
     scenarios = fuzz_inputs(rng, X_test)
 
@@ -136,6 +143,7 @@ def run_fuzz_tests(model: LogisticRegression, X_test: np.ndarray, y_test: np.nda
 
 
 def write_security_notes(path: Path, fuzz_results: List[FuzzResult]) -> None:
+    # Purpose: Persist a concise security summary and mitigation notes.
     lines = [
         "Security Notes",
         "==============",
@@ -164,6 +172,7 @@ def write_security_notes(path: Path, fuzz_results: List[FuzzResult]) -> None:
 
 
 def main() -> None:
+    # Purpose: Orchestrate threat modeling, fuzz testing, and report outputs.
     parser = argparse.ArgumentParser(description="Security audit with threat model and fuzz testing.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--out", type=str, default="reports")

@@ -1,0 +1,2 @@
+decision_id,timestamp,input_summary,model_output,confidence,explanation,risk_level,requires_review,reviewer_id,review_decision,review_notes
+d0a408be-e868-4280-94a9-ad6a9ec7048b,2026-02-01T23:33:20.618836+00:00,Sample input summary,Sample model output,0.62,Placeholder explanation (SHAP/LIME/LLM rationale),medium,True,pending,pending,

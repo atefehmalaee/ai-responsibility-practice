@@ -20,10 +20,12 @@ class ModelSummary:
 
 
 def build_feature_names(n_features: int) -> list:
+    # Purpose: Provide stable, human-readable feature labels.
     return [f"feature_{i}" for i in range(n_features)]  # Stable feature labels
 
 
 def global_importance(coef: np.ndarray, feature_names: list) -> pd.DataFrame:
+    # Purpose: Compute global feature importance from model coefficients.
     importance = np.abs(coef).ravel()  # Use absolute coefficients
     order = np.argsort(importance)[::-1]  # Sort descending
     return pd.DataFrame(  # Global feature importance table
@@ -43,6 +45,7 @@ def local_explanations(
     proba: np.ndarray,
     sample_ids: list,
 ) -> pd.DataFrame:
+    # Purpose: Explain individual predictions with top feature contributions.
     rows = []  # Collect per-sample explanations
     weights = coef.ravel()  # Linear model weights
     for row_idx in sample_ids:  # Explain selected samples
@@ -69,6 +72,7 @@ def write_model_card(
     feature_names: list,
     notes: str,
 ) -> None:
+    # Purpose: Generate a concise model card for transparency.
     content = "\n".join(  # Simple markdown model card
         [
             "Model Card",
@@ -112,6 +116,7 @@ def write_model_card(
 
 
 def main() -> None:
+    # Purpose: Orchestrate training, explanations, and report outputs.
     parser = argparse.ArgumentParser(description="Transparency audit with global/local explanations.")  # CLI
     parser.add_argument("--seed", type=int, default=42)  # RNG seed
     parser.add_argument("--out", type=str, default="reports")  # Output directory

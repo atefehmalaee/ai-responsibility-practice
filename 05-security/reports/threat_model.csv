@@ -1,0 +1,6 @@
+asset,threat,impact,mitigation
+Training data,Data poisoning (tampered labels or samples),Model integrity compromised,"Data access controls, checksums, sampling audits"
+Feature pipeline,Input validation bypass,Unexpected model behavior,"Schema validation, type checks, reject malformed rows"
+Model artifact,Model theft or tampering,"Intellectual property loss, unsafe outputs","Artifact signing, access control, integrity checks"
+Inference API,Adversarial inputs / prompt injection,Unsafe or incorrect decisions,"Rate limits, input sanitization, monitoring"
+Dependencies,Malicious package in supply chain,Runtime compromise,"Pinned versions, SCA scans, restricted registries"

@@ -1,43 +1,40 @@
 Human Oversight & Control
 =========================
 
-Goal
-----
-Design safe human review, escalation, and override flows.
+Purpose
+-------
+Design and demonstrate human-in-the-loop governance with clear review thresholds,
+escalation paths, and rollback procedures.
 
-What to build (professional, portfolio-ready)
----------------------------------------------
-- Oversight policy with review thresholds
-- Escalation and rollback checklist
-- Human review queue simulation
+What this module delivers
+-------------------------
+- Review policy with auto-approve / auto-reject thresholds
+- Simulated review queue with decision routing
+- Escalation and rollback checklist for incidents
 
-Techniques
-----------
-- Human-in-the-loop review thresholds
-- Escalation policies for uncertain outputs
-- Override and rollback procedures
+Key techniques
+--------------
+- Confidence-based routing and human review thresholds
+- Escalation policies for low-confidence or high-risk cases
+- Override and rollback procedures for safety control
 
-Exercises
----------
-- Define when humans must review outputs.
-- Simulate a bad output and document response steps.
-
-Quick start
------------
-1. Install deps:
+Quick start (top-level)
+-----------------------
+1. Create environment:
    - `python -m venv .venv`
    - `source .venv/bin/activate`
-   - `pip install -r requirements.txt`
-2. Run the oversight audit:
-   - `python oversight_audit.py --seed 42 --out reports`
+2. Install dependencies:
+   - `pip install -r 08-human-oversight/requirements.txt`
+3. Run from the project root:
+   - `python 08-human-oversight/oversight_audit.py --seed 42 --out 08-human-oversight/reports`
 
 Outputs
 -------
-- `reports/review_queue.csv`
-- `reports/oversight_policy.md`
-- `reports/escalation_checklist.md`
+- `08-human-oversight/reports/review_queue.csv`
+- `08-human-oversight/reports/oversight_policy.md`
+- `08-human-oversight/reports/escalation_checklist.md`
 
 Deliverables
 ------------
-- Oversight workflow diagram
-- Escalation and rollback checklist
+- Oversight policy and audit trail for routing decisions
+- Escalation and rollback checklist for governance readiness

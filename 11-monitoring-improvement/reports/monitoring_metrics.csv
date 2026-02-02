@@ -1,0 +1,4 @@
+metric,value,threshold,status
+accuracy,0.53,0.75,alert
+drift_flags,7.0,1.0,alert
+data_volume,2000.0,1500.0,ok

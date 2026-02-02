@@ -29,7 +29,7 @@ def compute_ece(y_true: np.ndarray, proba: np.ndarray, n_bins: int = 10) -> floa
             continue
         bin_acc = float(np.mean(y_true[mask]))
         bin_conf = float(np.mean(proba[mask]))
-        ece += (np.sum(mask) / len(proba)) * abs(bin_acc - bin_conf)
+        ece += (np.sum(mask) / len(proba)) * abs(bin_acc - bin_conf)  # Calibration gap
     return float(ece)
 
 
@@ -45,15 +45,15 @@ def error_slices(y_true: np.ndarray, y_pred: np.ndarray, slice_feature: np.ndarr
 
 def stress_tests(X: np.ndarray, rng: np.random.RandomState) -> Dict[str, np.ndarray]:
     tests = {}
-    tests["noise"] = X + rng.normal(0, 0.3, size=X.shape)
-    tests["scale"] = X * rng.uniform(0.7, 1.4, size=(1, X.shape[1]))
-    tests["outliers"] = X * (1 + (rng.rand(*X.shape) < 0.02) * 5.0)
+    tests["noise"] = X + rng.normal(0, 0.3, size=X.shape)  # Add Gaussian noise
+    tests["scale"] = X * rng.uniform(0.7, 1.4, size=(1, X.shape[1]))  # Feature scaling drift
+    tests["outliers"] = X * (1 + (rng.rand(*X.shape) < 0.02) * 5.0)  # Rare extreme values
     return tests
 
 
 def evaluate(model: LogisticRegression, X: np.ndarray, y: np.ndarray) -> ReliabilityMetrics:
     proba = model.predict_proba(X)[:, 1]
-    y_pred = (proba >= 0.5).astype(int)
+    y_pred = (proba >= 0.5).astype(int)  # Default decision threshold
     return ReliabilityMetrics(
         accuracy=float(accuracy_score(y, y_pred)),
         brier=float(brier_score_loss(y, proba)),
@@ -67,7 +67,7 @@ def main() -> None:
     parser.add_argument("--out", type=str, default="reports")
     args = parser.parse_args()
 
-    rng = np.random.RandomState(args.seed)
+    rng = np.random.RandomState(args.seed)  # Reproducible stress scenarios
 
     X, y = make_classification(
         n_samples=2500,
@@ -83,28 +83,28 @@ def main() -> None:
         X, y, test_size=0.3, random_state=args.seed, stratify=y
     )
 
-    scaler = StandardScaler()
+    scaler = StandardScaler()  # Normalize features for stable calibration
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
 
-    model = LogisticRegression(max_iter=1000)
+    model = LogisticRegression(max_iter=1000)  # Simple baseline for reliability tests
     model.fit(X_train, y_train)
 
-    baseline = evaluate(model, X_test, y_test)
+    baseline = evaluate(model, X_test, y_test)  # Baseline reliability metrics
 
-    proba = model.predict_proba(X_test)[:, 1]
-    y_pred = (proba >= 0.5).astype(int)
+    proba = model.predict_proba(X_test)[:, 1]  # Probabilities for slice analysis
+    y_pred = (proba >= 0.5).astype(int)  # Binary predictions
 
-    slice_feature = (X_test[:, 0] > 0).astype(int)
+    slice_feature = (X_test[:, 0] > 0).astype(int)  # Simple slice on one feature
     slice_report = error_slices(y_test, y_pred, slice_feature)
 
     stress_reports = []
     for name, X_stress in stress_tests(X_test, rng).items():
-        metrics = evaluate(model, X_stress, y_test)
+        metrics = evaluate(model, X_stress, y_test)  # Reliability under perturbation
         stress_reports.append({"scenario": name, **metrics.__dict__})
 
     out_dir = Path(args.out)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)  # Ensure output folder exists
 
     pd.DataFrame([baseline.__dict__]).to_csv(out_dir / "reliability_metrics.csv", index=False)
     slice_report.to_csv(out_dir / "error_slices.csv", index=False)

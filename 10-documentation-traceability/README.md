@@ -1,44 +1,45 @@
 Documentation & Traceability
 ============================
 
-Goal
-----
-Track data, models, and decisions across the lifecycle.
+Purpose
+-------
+Track data, experiments, and model versions using MLflow as the single source of truth.
 
-What to build (professional, portfolio-ready)
----------------------------------------------
-- Dataset lineage record
-- Model version log
-- Experiment metadata and change log
+What this module delivers
+-------------------------
+- Data lineage metadata logged as MLflow tags
+- Experiment runs with parameters, metrics, and artifacts
+- Registered model versions in the MLflow Model Registry
+- Change log stored as an MLflow artifact
 
-Techniques
-----------
-- Versioning for data and models
-- Dataset lineage and provenance notes
-- Change logs and experiment tracking
+Key techniques
+--------------
+- MLflow experiment grouping with `mlflow.set_experiment()`
+- Parameter/metric tracking with `mlflow.log_param` and `mlflow.log_metric`
+- Artifact logging with `mlflow.log_artifact`
+- Model registration with `mlflow.register_model`
 
-Exercises
----------
-- Create a simple lineage record for your dataset.
-- Track two model versions with notes.
-
-Quick start
------------
-1. Install deps:
+Quick start (top-level)
+-----------------------
+1. Create environment:
    - `python -m venv .venv`
    - `source .venv/bin/activate`
-   - `pip install -r requirements.txt`
-2. Run the documentation audit:
-   - `python traceability_audit.py --out reports`
+2. Install dependencies:
+   - `pip install -r 10-documentation-traceability/requirements.txt`
+3. Run from the project root:
+   - `python 10-documentation-traceability/traceability_audit.py --experiment-name traceability_audit`
+
+View results in MLflow UI
+-------------------------
+- Run `mlflow ui` from the project root, then open `http://127.0.0.1:5000`
 
 Outputs
 -------
-- `reports/data_lineage.csv`
-- `reports/model_registry.csv`
-- `reports/experiment_log.csv`
-- `reports/change_log.md`
+- MLflow runs under the `traceability_audit` experiment
+- Tags: dataset lineage metadata (source, version, PII flag)
+- Artifacts: change log and JSON summaries
+- Registered model versions in the MLflow Model Registry
 
 Deliverables
 ------------
-- Lineage record
-- Model version log
+- Traceability evidence in MLflow (runs, tags, artifacts, model registry)

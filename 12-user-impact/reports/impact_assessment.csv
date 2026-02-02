@@ -1,0 +1,4 @@
+risk_id,description,severity,likelihood,mitigation,status,version,owner,last_reviewed,incident_triggered_count,mitigation_status
+R-001,Incorrect decision harms user outcome,High,Medium,Human review for low-confidence outputs,Open,1.0,Responsible AI,2026-02-01T23:33:20.618332+00:00,0,planned
+R-002,Confusing UI leads to misuse,Medium,Medium,Usability testing and clear explanations,Open,1.0,Product,2026-02-01T23:33:20.618332+00:00,0,planned
+R-003,Accessibility barriers for screen readers,Medium,Low,WCAG checks and keyboard navigation support,Open,1.0,UX,2026-02-01T23:33:20.618332+00:00,0,planned

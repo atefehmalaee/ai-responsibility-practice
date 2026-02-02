@@ -1,41 +1,39 @@
 Accountability & Governance
 ===========================
 
-Goal
-----
-Define ownership, review gates, and decision authority. <!-- Scope of this module -->
+Purpose
+-------
+Establish clear ownership and decision records to support auditability and risk oversight.
 
-What to build (professional, portfolio-ready)
----------------------------------------------
-- RACI ownership matrix <!-- Clarifies decision ownership -->
-- Launch approval checklist <!-- Ensures release gates -->
-- Audit log template for decisions and changes <!-- Creates traceability -->
+What this module delivers
+-------------------------
+- RACI matrix defining roles and responsibilities
+- Launch approval checklist for gated releases
+- Audit log for decision traceability
 
-Techniques
-----------
-- RACI chart for model lifecycle <!-- Formal role mapping -->
-- Approval checkpoints (pre-launch, post-launch) <!-- Governance gates -->
-- Audit trail for changes and approvals <!-- Accountability record -->
+Key techniques
+--------------
+- RACI (Responsible, Accountable, Consulted, Informed)
+- Release approval gating with checklists
+- Audit logging for governance traceability
 
-Exercises
----------
-- Create a RACI for data, model, and release steps. <!-- Assign R/A/C/I -->
-- Define a minimum approval checklist for launch. <!-- Define go/no-go -->
-
-Quick start
------------
-1. Fill out `raci_matrix.md` with roles in your project. <!-- Ownership -->
-2. Customize `approval_checklist.md` for release. <!-- Gate criteria -->
-3. Use `audit_log.csv` to record key decisions. <!-- Audit trail -->
+Quick start (top-level)
+-----------------------
+1. Review templates:
+   - `03-accountability/raci_matrix.md`
+   - `03-accountability/approval_checklist.md`
+   - `03-accountability/audit_log.csv`
+2. Append a new audit entry:
+   - `python 03-accountability/log_audit_entry.py --decision "Model approved" --owner "Responsible AI Lead"`
 
 Outputs
 -------
-- `raci_matrix.md` <!-- Role mapping -->
-- `approval_checklist.md` <!-- Approval gates -->
-- `audit_log.csv` <!-- Decision log -->
+- `03-accountability/raci_matrix.md`
+- `03-accountability/approval_checklist.md`
+- `03-accountability/audit_log.csv`
+- `03-accountability/log_audit_entry.py`
 
 Deliverables
 ------------
-- RACI table
-- Approval checklist template
-- Audit log template
+- Governance artifacts ready for review or audit
+- Decision trail with ownership and approvals

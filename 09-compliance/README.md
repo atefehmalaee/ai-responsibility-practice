@@ -1,43 +1,42 @@
 Compliance & Legal Alignment
 ============================
 
-Goal
-----
-Align the system with applicable laws and policies.
+Purpose
+-------
+Demonstrate compliance evidence using MLflow metadata attached to model runs.
 
-What to build (professional, portfolio-ready)
----------------------------------------------
-- Compliance matrix mapping requirements to controls
-- DPIA-style risk checklist
-- Evidence log for approvals
+What this module delivers
+-------------------------
+- Compliance requirements logged as MLflow tags (`compliance.*`)
+- DPIA checks logged as MLflow tags (`dpia.*`)
+- Evidence files captured as MLflow artifacts
 
-Techniques
-----------
-- Map requirements to system controls
-- DPIA-style privacy impact checklist
-- Vendor and licensing review
+Key techniques
+--------------
+- Requirement-to-control mapping via MLflow tags
+- DPIA risk documentation with explicit mitigation tags
+- Evidence capture using MLflow artifacts
 
-Exercises
----------
-- Build a compliance matrix for your use case.
-- Identify any high-risk constraints and mitigations.
-
-Quick start
------------
-1. Install deps:
+Quick start (top-level)
+-----------------------
+1. Create environment:
    - `python -m venv .venv`
    - `source .venv/bin/activate`
-   - `pip install -r requirements.txt`
-2. Run the compliance audit:
-   - `python compliance_audit.py --out reports`
+2. Install dependencies:
+   - `pip install -r 09-compliance/requirements.txt`
+3. Run from the project root:
+   - `python 09-compliance/compliance_audit.py --evidence-root .`
+
+View results in MLflow UI
+-------------------------
+- Run `mlflow ui` from the project root, then open `http://127.0.0.1:5000`
 
 Outputs
 -------
-- `reports/compliance_matrix.csv`
-- `reports/dpia_checklist.csv`
-- `reports/compliance_notes.md`
+- MLflow runs under the `responsible-ai-compliance` experiment
+- Tags: `compliance.*` and `dpia.*` entries for each requirement/check
+- Artifacts: evidence files when paths exist
 
 Deliverables
 ------------
-- Compliance matrix
-- Risk summary with required controls
+- Audit-ready compliance metadata in MLflow
